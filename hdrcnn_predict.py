@@ -166,14 +166,14 @@ for i in range(len(frames)):
         k += 1
 
         # 仅仅对过曝光区域进行了细节增强
-        img_io.writeLDR(x_buffer, '%s/%06d_in.png' % (FLAGS.out_dir, k), -3)  # -3的曝光度
-        img_io.writeLDR(y_gamma, '%s/%06d_out.png' % (FLAGS.out_dir, k), -3)
-
+        image_name = frames[i]
+        image_name_out = image_name[image_name.find("/")+1:image_name.find(".")]
+        print("image_name_out:%s" % image_name_out)
+        img_io.writeLDR(x_buffer, '%s/%s_in_%d.png' % (FLAGS.out_dir,image_name_out, k), -3)  # -3的曝光度
+        img_io.writeLDR(y_gamma, '%s/%s_out_%d.png' % (FLAGS.out_dir,image_name_out, k), -3)
         # 对曝光度增强没有效果-》欠曝光细节没有增强
-        # img_io.writeLDR(x_buffer, '%s/%06d_in.png' % (FLAGS.out_dir, k),2)  # 2的曝光度
-        # img_io.writeLDR(y_gamma, '%s/%06d_out.png' % (FLAGS.out_dir, k),2)
 
-        img_io.writeEXR(y_predict, '%s/%06d_out.exr' % (FLAGS.out_dir, k))
+        img_io.writeEXR(y_predict, '%s/%s_out_%d.exr' % (FLAGS.out_dir,image_name_out, k))
         print_("\tdone\n")
 
     except img_io.IOException as e:
