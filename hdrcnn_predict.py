@@ -37,11 +37,15 @@
  " Date: Aug 2017
 """
 
-import os, sys
+import os
+import sys
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-import numpy as np
-import network, img_io
+
+import img_io
+import network
 
 eps = 1e-5
 
@@ -73,7 +77,6 @@ tf.flags.DEFINE_float("scaling", "1.0",
                       "Pre-scaling, which is followed by clipping, in order to remove compression artifacts close to highlights")
 tf.flags.DEFINE_float("gamma", "1.0",
                       "Gamma/exponential curve applied before, and inverted after, prediction. This can be used to control the boost of reconstructed pixels.")
-
 
 # 32的倍数
 # Round to be multiple of 32, so that autoencoder pooling+upsampling
@@ -160,9 +163,16 @@ for i in range(len(frames)):
 
         # Write to disc
         print_("\tWriting...")
-        k += 1;
-        img_io.writeLDR(x_buffer, '%s/%06d_in.png' % (FLAGS.out_dir, k), -3)
+        k += 1
+
+        # 仅仅对过曝光区域进行了细节增强
+        img_io.writeLDR(x_buffer, '%s/%06d_in.png' % (FLAGS.out_dir, k), -3)  # -3的曝光度
         img_io.writeLDR(y_gamma, '%s/%06d_out.png' % (FLAGS.out_dir, k), -3)
+
+        # 对曝光度增强没有效果-》欠曝光细节没有增强
+        # img_io.writeLDR(x_buffer, '%s/%06d_in.png' % (FLAGS.out_dir, k),2)  # 2的曝光度
+        # img_io.writeLDR(y_gamma, '%s/%06d_out.png' % (FLAGS.out_dir, k),2)
+
         img_io.writeEXR(y_predict, '%s/%06d_out.exr' % (FLAGS.out_dir, k))
         print_("\tdone\n")
 
